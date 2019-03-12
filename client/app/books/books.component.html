@@ -1,0 +1,81 @@
+<app-loading [condition]="isLoading"></app-loading>
+
+<app-toast [message]="toast.message"></app-toast>
+
+<div class="card mb-3" *ngIf="!isLoading">
+  <h4 class="card-header">Books ({{books.length}})</h4>
+  <div class="card-body">
+    <table class="table table-bordered">
+      <thead class="thead-light">
+        <tr>
+          <th scope="col">Book Name</th>
+          <th scope="col">Author</th>
+          <th scope="col">Publisher</th>
+        </tr>
+      </thead>
+      <tbody *ngIf="books.length === 0">
+        <tr>
+          <td colspan="4">There are no books in the DB. Add a new book below.</td>
+        </tr>  
+      </tbody>
+      <tbody *ngIf="!isEditing">
+        <tr *ngFor="let book of books">
+          <td>{{book.name}}</td>
+          <td>{{book.author}}</td>
+          <td>{{book.publisher}}</td>
+          <td *ngIf="auth.loggedIn && auth.isAdmin">
+            <button class="btn btn-sm btn-primary" (click)="enableEditing(book)">
+              <i class="fa fa-pencil"></i> Edit
+            </button> 
+            <button class="btn btn-sm btn-danger ml-1" (click)="deleteBook(book)">
+              <i class="fa fa-trash"></i> Delete
+            </button>
+          </td>
+          <td *ngIf="auth.loggedIn && !auth.isAdmin">
+            <button class="btn btn-sm btn-success" (click)="addBooking(book.name,auth.currentUser.username,
+            auth.currentUser.email)">
+              <i class="fa fa-plus"></i> Issue
+            </button>
+          </td>
+        </tr>  
+      </tbody>
+      <tbody *ngIf="isEditing">
+        <tr>
+          <td colspan="4">
+            <form class="form-inline" #form="ngForm" (ngSubmit)="editBook(book)">
+              <input class="form-control mr-2" type="text" name="name"
+                     [(ngModel)]="book.name" placeholder="Name" required>
+              <input class="form-control mr-2" type="text" name="author"
+                     [(ngModel)]="book.author" placeholder="Author" required>
+              <input class="form-control mr-2" type="text" name="publisher"
+                     [(ngModel)]="book.publisher" placeholder="Publisher"  required>
+              <button class="btn btn-sm btn-primary mr-2" type="submit" [disabled]="!form.form.valid">
+                <i class="fa fa-floppy-o"></i> Save
+              </button>
+              <button class="btn btn-sm btn-warning" (click)="cancelEditing()">
+                <i class="fa fa-times"></i> Cancel
+              </button>
+            </form>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="card" *ngIf="!isEditing && auth.isAdmin">
+  <h4 class="card-header">Add new Book</h4>
+  <div class="card-body">
+    <form class="form-inline" [formGroup]="addBookForm" (ngSubmit)="addBook()">
+      <input class="form-control mr-2" type="text" name="name"
+             formControlName="name" placeholder="Name">
+      <input class="form-control mr-2" type="text" name="author"
+             formControlName="author" placeholder="Author">
+      <input class="form-control mr-2" type="text" name="publisher"
+             formControlName="publisher" placeholder="Publisher">
+      <button class="btn btn-primary" type="submit" [disabled]="!addBookForm.valid">
+        <i class="fa fa-plus"></i> Add
+      </button>
+    </form>
+  </div>
+</div>

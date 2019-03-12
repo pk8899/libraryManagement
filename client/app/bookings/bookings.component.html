@@ -1,0 +1,42 @@
+<app-loading [condition]="isLoading"></app-loading>
+
+<app-toast [message]="toast.message"></app-toast>
+
+<div class="card mb-3" *ngIf="!isLoading">
+  <h4 class="card-header">Bookings ({{bookings.length}})</h4>
+  <div class="card-body">
+    <table class="table table-bordered">
+      <thead class="thead-light">
+        <tr>
+          <th scope="col">Name</th>
+          <th scope="col">Issued By</th>
+          <th scope="col">Email</th>
+        </tr>
+      </thead>
+      <tbody *ngIf="bookings.length === 0">
+        <tr>
+          <td colspan="4">There are no bookings in the DB.</td>
+        </tr>  
+      </tbody>
+      <tbody *ngIf="!isEditing && !auth.isAdmin">
+        <tr *ngFor="let booking of bookings">
+          <td *ngIf="auth.currentUser.email===booking.email">{{booking.name}}</td>
+          <td *ngIf="auth.currentUser.email===booking.email">{{booking.issuedby}}</td>
+          <td *ngIf="auth.currentUser.email===booking.email">{{booking.email}}</td>
+          <td *ngIf="auth.currentUser.email===booking.email"> 
+            <button class="btn btn-sm btn-danger ml-1" (click)="deleteBooking(booking)">
+              <i class="fa fa-trash"></i> Return
+            </button>
+          </td>
+        </tr>  
+      </tbody>
+      <tbody *ngIf="!isEditing && auth.isAdmin">
+          <tr *ngFor="let booking of bookings">
+            <td>{{booking.name}}</td>
+            <td>{{booking.issuedby}}</td>
+            <td>{{booking.email}}</td>
+          </tr>  
+        </tbody>
+    </table>
+  </div>
+</div>
